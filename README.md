@@ -8,6 +8,10 @@ O Usage LLMs é um widget para Windows que mostra quanto você já consumiu das 
 
 Abra o arquivo `Usage-LLMs-Windows.exe` baixado. O app é portátil e requer Windows de 64 bits com .NET Framework 4.8 ou 4.8.1. O Windows pode exibir um aviso porque o executável está sem assinatura digital.
 
+Antes de abrir pela primeira vez, guarde o executável em uma pasta fixa. Após a primeira abertura, o widget inicia automaticamente quando você entra no Windows. Você pode desligar essa opção com o botão direito no widget, em **Geral → Iniciar com o Windows**.
+
+Para atualizar, feche o widget, baixe a nova versão pelo botão acima e substitua o executável no mesmo local. Ao abrir a nova versão, suas preferências são mantidas.
+
 ## Como usar
 
 1. Para ver suas cotas, entre na sua conta ChatGPT pelo Codex CLI ou pela extensão oficial do Codex para VS Code. [Instalar o Codex CLI](https://github.com/openai/codex#quickstart)

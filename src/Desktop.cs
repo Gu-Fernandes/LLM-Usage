@@ -179,6 +179,8 @@ namespace UsageLLMs
     internal static class Startup
     {
         private const string Run = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string Preferences = @"Software\Usage LLMs";
+        private const string Disabled = "StartupDisabled";
         private const string Name = "Usage LLMs";
         private static string Command { get { return "\"" + Forms.Application.ExecutablePath + "\""; } }
 
@@ -193,13 +195,41 @@ namespace UsageLLMs
 
         public static void Set(bool enabled)
         {
+            using (var preferences = Registry.CurrentUser.CreateSubKey(Preferences))
             using (var key = Registry.CurrentUser.CreateSubKey(Run))
             {
                 if (enabled)
+                {
                     key.SetValue(Name, Command, RegistryValueKind.String);
+                    preferences.DeleteValue(Disabled, false);
+                }
                 else
+                {
+                    preferences.SetValue(Disabled, 1, RegistryValueKind.DWord);
                     key.DeleteValue(Name, false);
+                }
             }
+        }
+
+        public static void EnableByDefault()
+        {
+            try
+            {
+                using (var preferences = Registry.CurrentUser.OpenSubKey(Preferences))
+                {
+                    if (preferences != null && Equals(preferences.GetValue(Disabled), 1))
+                        return;
+                }
+                using (var key = Registry.CurrentUser.OpenSubKey(Run))
+                {
+                    if (key != null && key.GetValue(Name) != null)
+                        return;
+                }
+                Set(true);
+            }
+            catch (UnauthorizedAccessException) { }
+            catch (System.Security.SecurityException) { }
+            catch (IOException) { }
         }
     }
 
@@ -227,6 +257,7 @@ namespace UsageLLMs
             {
                 if (!first)
                     return 0;
+                Startup.EnableByDefault();
                 Forms.Application.EnableVisualStyles();
                 Forms.Application.SetCompatibleTextRenderingDefault(false);
                 using (var widget = new Widget())
