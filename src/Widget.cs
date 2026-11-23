@@ -14,6 +14,7 @@ namespace UsageLLMs
     internal sealed class Widget : FloatingWindow
     {
         private const float ActivityGlowRadius = 17;
+        private const string NoUsage = "—";
         private readonly Placement position = Placement.Load();
         private readonly CodexConnection connection = new CodexConnection();
         private readonly Timer poll = new Timer();
@@ -33,6 +34,8 @@ namespace UsageLLMs
         private GraphicsPath activityGlowShape;
         private PathGradientBrush activityGlowBrush;
         private Usage reading;
+        private string usageLabel = NoUsage;
+        private Font usageLabelFont;
         private string error;
         private string preferenceError;
         private string pendingPlacement;
@@ -441,6 +444,10 @@ namespace UsageLLMs
         private void ApplySize()
         {
             faceSize = position.WidgetSize;
+            if (usageLabelFont != null)
+                usageLabelFont.Dispose();
+            float scale = faceSize / (float)DockFace.Width;
+            usageLabelFont = new Font("Segoe UI Semibold", Pixel(9.5f * scale), FontStyle.Regular, GraphicsUnit.Pixel);
             DockToEdge();
         }
 
@@ -534,6 +541,8 @@ namespace UsageLLMs
 
         private void Render()
         {
+            var quota = reading == null ? null : reading.FiveHours ?? reading.Weekly;
+            usageLabel = quota == null ? NoUsage : quota.Used.ToString("0", Palette.Portuguese) + "%";
             if (details.Visible && hoveredProvider >= 0)
                 UpdateDetails();
             AccessibleDescription = String.Join(" · ", visibleProviders.Select(provider =>
@@ -549,7 +558,8 @@ namespace UsageLLMs
             if (providerCenters == null)
                 return;
             var g = args.Graphics;
-            g.ScaleTransform(faceSize / (float)DockFace.Width, faceSize / (float)DockFace.Width);
+            float scale = faceSize / (float)DockFace.Width;
+            g.ScaleTransform(scale, scale);
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             for (int index = 0; index < providerCenters.Length; index++)
             {
@@ -557,7 +567,7 @@ namespace UsageLLMs
                     continue;
                 Provider provider = visibleProviders[index];
                 PointF center = providerCenters[index];
-                var iconBounds = new RectangleF(center.X - 9, center.Y - 9, 18, 18);
+                var iconBounds = new RectangleF(center.X - 8.5f, center.Y - 13.5f, 17, 17);
                 if (provider == Provider.Codex)
                 {
                     var shortQuota = reading == null ? null : reading.FiveHours;
@@ -577,6 +587,22 @@ namespace UsageLLMs
                 }
                 else
                     PaintSettings(g, center);
+            }
+
+            g.ResetTransform();
+            for (int index = 0; index < providerCenters.Length; index++)
+            {
+                Provider provider = visibleProviders[index];
+                if (provider == Provider.None || !args.ClipRectangle.IntersectsWith(CellBounds(index)))
+                    continue;
+                PointF center = providerCenters[index];
+                var bounds = new Rectangle(Pixel((center.X - 16) * scale), Pixel((center.Y + 4) * scale),
+                    Pixel(32 * scale), Pixel(12 * scale));
+                string text = provider == Provider.Codex ? usageLabel : NoUsage;
+                Color color = text == NoUsage || error != null ? Palette.Muted : Palette.Text;
+                TextRenderer.DrawText(g, text, usageLabelFont, bounds, color,
+                    TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine |
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.PreserveGraphicsClipping);
             }
         }
 
@@ -677,6 +703,8 @@ namespace UsageLLMs
             {
                 logo.Dispose();
                 providerMarks.Dispose();
+                if (usageLabelFont != null)
+                    usageLabelFont.Dispose();
                 details.Dispose();
                 poll.Dispose();
                 hover.Dispose();
