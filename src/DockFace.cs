@@ -7,7 +7,7 @@ namespace UsageLLMs
     {
         public const int Width = 68;
         public const int LabelTop = 29;
-        public const int LabelHeight = 24;
+        public const int LabelHeight = 19;
         public const int LabelWidth = 56;
 
         public static bool IsLateral(Edge edge)
@@ -17,7 +17,7 @@ namespace UsageLLMs
 
         public static int CellStep(Edge edge, bool showLabels)
         {
-            return showLabels && IsLateral(edge) ? 84 : 70;
+            return showLabels && IsLateral(edge) ? 106 : 70;
         }
 
         public static int Depth(Edge edge, bool showLabels)
