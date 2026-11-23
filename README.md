@@ -11,7 +11,7 @@ Abra o arquivo `Usage-LLMs-Windows.exe` baixado. O app é portátil e requer Win
 ## Como usar
 
 1. Para ver suas cotas, entre na sua conta ChatGPT pelo Codex CLI ou pela extensão oficial do Codex para VS Code. [Instalar o Codex CLI](https://github.com/openai/codex#quickstart)
-2. O número abaixo do ícone do Codex mostra a cota de 5 horas, ou a semanal quando for a única disponível. Passe o mouse para ver as duas cotas e os horários de renovação. O brilho indica atividade em uma sessão local.
+2. O número abaixo do anel externo do Codex mostra a cota de 5 horas, ou a semanal quando for a única disponível. Passe o mouse para ver as duas cotas e os horários de renovação. O brilho indica atividade em uma sessão local.
 3. Arraste o widget para mudar de borda. Clique com o botão direito para ajustar tamanho e cores, escolher quais provedores aparecem ou ativar a inicialização com o Windows.
 
 ![Widget na borda direita do Windows, com os anéis e o cartão de cotas do Codex aberto](docs/widget-preview.png)

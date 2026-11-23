@@ -121,7 +121,7 @@ namespace UsageLLMs
                 start.Y + (int)Math.Round((end.Y - start.Y) * Alignment / 100));
         }
 
-        public Point DragTo(Point pointer, Size lateralSize)
+        public Point DragTo(Point pointer, Size lateralSize, Size horizontalSize)
         {
             var screen = Forms.Screen.FromPoint(pointer);
             var area = screen.WorkingArea;
@@ -130,7 +130,7 @@ namespace UsageLLMs
             Edge previousEdge = Edge;
             foreach (var edge in Edges)
             {
-                Size size = DockFace.IsLateral(edge) ? lateralSize : new Size(lateralSize.Height, lateralSize.Width);
+                Size size = DockFace.IsLateral(edge) ? lateralSize : horizontalSize;
                 var desired = new Point(pointer.X - size.Width / 2, pointer.Y - size.Height / 2);
                 Point start, end;
                 Segment(area, size, edge, out start, out end);

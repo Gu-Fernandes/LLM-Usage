@@ -149,7 +149,8 @@ namespace UsageLLMs
             if (!dragging && dragThreshold.Contains(pointer))
                 return;
             dragging = true;
-            var target = position.DragTo(pointer, FaceDimensions(faceSize, Edge.Right));
+            var target = position.DragTo(pointer, FaceDimensions(faceSize, Edge.Right),
+                FaceDimensions(faceSize, Edge.Top));
             UpdateShape();
             Location = target;
         }
@@ -282,7 +283,7 @@ namespace UsageLLMs
             bool lateral = DockFace.IsLateral(position.Edge);
             float scale = faceSize / (float)DockFace.Width;
             int first = Pixel((lateral ? providerCenters[0].Y : providerCenters[0].X) * scale);
-            float index = ((lateral ? point.Y : point.X) - first) / (float)Pixel(DockFace.CellStep * scale);
+            float index = ((lateral ? point.Y : point.X) - first) / (float)Pixel(DockFace.CellStep(position.Edge, ShowsUsage) * scale);
             return Math.Max(0, Math.Min(visibleProviders.Length - 1, (int)Math.Round(index)));
         }
 
@@ -342,7 +343,7 @@ namespace UsageLLMs
                 return ClientRectangle;
             bool lateral = DockFace.IsLateral(position.Edge);
             float sizeScale = faceSize / (float)DockFace.Width;
-            int span = Pixel(DockFace.CellStep * sizeScale);
+            int span = Pixel(DockFace.CellStep(position.Edge, ShowsUsage) * sizeScale);
             var center = providerCenters[provider];
             int offset = Pixel((lateral ? center.Y : center.X) * sizeScale) - span / 2;
             return lateral ? new Rectangle(0, offset, Width, span) : new Rectangle(offset, 0, span, Height);
@@ -451,10 +452,13 @@ namespace UsageLLMs
             DockToEdge();
         }
 
+        private bool ShowsUsage { get { return visibleProviders[0] != Provider.None; } }
+
         private Size FaceDimensions(int size, Edge edge)
         {
-            int depth = Pixel(size);
-            int length = Pixel(DockFace.LengthAt(size, visibleProviders.Length));
+            float scale = size / (float)DockFace.Width;
+            int depth = Pixel(DockFace.Depth(edge, ShowsUsage) * scale);
+            int length = Pixel(DockFace.Length(edge, visibleProviders.Length, ShowsUsage) * scale);
             return DockFace.IsLateral(edge) ? new Size(depth, length) : new Size(length, depth);
         }
 
@@ -466,13 +470,14 @@ namespace UsageLLMs
             shapedEdge = position.Edge;
             bool lateral = DockFace.IsLateral(shapedEdge);
             ReleaseActivityGlow();
-            int length = DockFace.Length(visibleProviders.Length);
-            using (var shape = DockFace.Create(shapedEdge, visibleProviders.Length, out providerCenters))
+            int length = DockFace.Length(shapedEdge, visibleProviders.Length, ShowsUsage);
+            int depth = DockFace.Depth(shapedEdge, ShowsUsage);
+            using (var shape = DockFace.Create(shapedEdge, visibleProviders.Length, ShowsUsage, out providerCenters))
             {
                 if (codexCell >= 0)
                     faceCenter = providerCenters[codexCell];
                 SetShapedSurface(FaceDimensions(faceSize, shapedEdge), shape,
-                    lateral ? DockFace.Width : length, lateral ? length : DockFace.Width);
+                    lateral ? depth : length, lateral ? length : depth);
             }
             Invalidate();
         }
@@ -567,7 +572,7 @@ namespace UsageLLMs
                     continue;
                 Provider provider = visibleProviders[index];
                 PointF center = providerCenters[index];
-                var iconBounds = new RectangleF(center.X - 8.5f, center.Y - 13.5f, 17, 17);
+                var iconBounds = new RectangleF(center.X - 9, center.Y - 9, 18, 18);
                 if (provider == Provider.Codex)
                 {
                     var shortQuota = reading == null ? null : reading.FiveHours;
@@ -596,8 +601,8 @@ namespace UsageLLMs
                 if (provider == Provider.None || !args.ClipRectangle.IntersectsWith(CellBounds(index)))
                     continue;
                 PointF center = providerCenters[index];
-                var bounds = new Rectangle(Pixel((center.X - 16) * scale), Pixel((center.Y + 4) * scale),
-                    Pixel(32 * scale), Pixel(12 * scale));
+                var bounds = new Rectangle(Pixel((center.X - 16) * scale), Pixel((center.Y + DockFace.LabelTop) * scale),
+                    Pixel(32 * scale), Pixel(DockFace.LabelHeight * scale));
                 string text = provider == Provider.Codex ? usageLabel : NoUsage;
                 Color color = text == NoUsage || error != null ? Palette.Muted : Palette.Text;
                 TextRenderer.DrawText(g, text, usageLabelFont, bounds, color,
