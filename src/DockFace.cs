@@ -7,7 +7,8 @@ namespace UsageLLMs
     {
         public const int Width = 68;
         public const int LabelTop = 29;
-        public const int LabelHeight = 12;
+        public const int LabelHeight = 24;
+        public const int LabelWidth = 56;
 
         public static bool IsLateral(Edge edge)
         {
@@ -16,17 +17,17 @@ namespace UsageLLMs
 
         public static int CellStep(Edge edge, bool showLabels)
         {
-            return showLabels && IsLateral(edge) ? 82 : 70;
+            return showLabels && IsLateral(edge) ? 84 : 70;
         }
 
         public static int Depth(Edge edge, bool showLabels)
         {
-            return Width + (showLabels && !IsLateral(edge) ? 16 : 0);
+            return Width + (showLabels && !IsLateral(edge) ? 28 : 0);
         }
 
         public static int Length(Edge edge, int cells, bool showLabels)
         {
-            return 100 + CellStep(edge, showLabels) * (cells - 1) + (showLabels && IsLateral(edge) ? 12 : 0);
+            return 100 + CellStep(edge, showLabels) * (cells - 1) + (showLabels && IsLateral(edge) ? 30 : 0);
         }
 
         public static GraphicsPath Create(Edge edge, int cells, bool showLabels, out PointF[] centers)

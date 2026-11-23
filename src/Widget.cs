@@ -283,8 +283,13 @@ namespace UsageLLMs
             bool lateral = DockFace.IsLateral(position.Edge);
             float scale = faceSize / (float)DockFace.Width;
             int first = Pixel((lateral ? providerCenters[0].Y : providerCenters[0].X) * scale);
-            float index = ((lateral ? point.Y : point.X) - first) / (float)Pixel(DockFace.CellStep(position.Edge, ShowsUsage) * scale);
-            return Math.Max(0, Math.Min(visibleProviders.Length - 1, (int)Math.Round(index)));
+            int step = DockFace.CellStep(position.Edge, ShowsUsage);
+            float index = ((lateral ? point.Y : point.X) - first) / (float)Pixel(step * scale);
+            // On the sides, keep the lower label in the same hover area as its ring.
+            double offset = lateral && ShowsUsage
+                ? 1 - (DockFace.LabelTop + DockFace.LabelHeight + 1.0) / step
+                : 0.5;
+            return Math.Max(0, Math.Min(visibleProviders.Length - 1, (int)Math.Floor(index + offset)));
         }
 
         private void TrackHover(Point point)
@@ -448,7 +453,7 @@ namespace UsageLLMs
             if (usageLabelFont != null)
                 usageLabelFont.Dispose();
             float scale = faceSize / (float)DockFace.Width;
-            usageLabelFont = new Font("Segoe UI Semibold", Pixel(9.5f * scale), FontStyle.Regular, GraphicsUnit.Pixel);
+            usageLabelFont = new Font("Segoe UI Semibold", Pixel(18 * scale), FontStyle.Regular, GraphicsUnit.Pixel);
             DockToEdge();
         }
 
@@ -598,11 +603,14 @@ namespace UsageLLMs
             for (int index = 0; index < providerCenters.Length; index++)
             {
                 Provider provider = visibleProviders[index];
-                if (provider == Provider.None || !args.ClipRectangle.IntersectsWith(CellBounds(index)))
+                if (provider == Provider.None)
                     continue;
                 PointF center = providerCenters[index];
-                var bounds = new Rectangle(Pixel((center.X - 16) * scale), Pixel((center.Y + DockFace.LabelTop) * scale),
-                    Pixel(32 * scale), Pixel(DockFace.LabelHeight * scale));
+                var bounds = new Rectangle(Pixel((center.X - DockFace.LabelWidth / 2f) * scale),
+                    Pixel((center.Y + DockFace.LabelTop) * scale),
+                    Pixel(DockFace.LabelWidth * scale), Pixel(DockFace.LabelHeight * scale));
+                if (!args.ClipRectangle.IntersectsWith(bounds))
+                    continue;
                 string text = provider == Provider.Codex ? usageLabel : NoUsage;
                 Color color = text == NoUsage || error != null ? Palette.Muted : Palette.Text;
                 TextRenderer.DrawText(g, text, usageLabelFont, bounds, color,
