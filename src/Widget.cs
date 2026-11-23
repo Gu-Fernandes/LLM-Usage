@@ -453,7 +453,7 @@ namespace UsageLLMs
             if (usageLabelFont != null)
                 usageLabelFont.Dispose();
             float scale = faceSize / (float)DockFace.Width;
-            usageLabelFont = new Font("Segoe UI Semibold", Pixel(13 * scale), FontStyle.Regular, GraphicsUnit.Pixel);
+            usageLabelFont = new Font("Segoe UI Semibold", Pixel(17 * scale), FontStyle.Regular, GraphicsUnit.Pixel);
             DockToEdge();
         }
 

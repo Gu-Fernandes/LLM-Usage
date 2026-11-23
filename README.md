@@ -20,7 +20,6 @@ Para atualizar, feche o widget, baixe a nova versão pelo botão acima e substit
 
 ![Widget na borda direita do Windows, com os anéis e o cartão de cotas do Codex aberto](docs/widget-preview.png)
 
-*Imagem ilustrativa. As cotas reais estão disponíveis para o Codex. Claude Code, Antigravity e Grok Build aparecem como prévias da interface.*
 
 ## Compilar
 
