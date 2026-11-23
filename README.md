@@ -1,18 +1,22 @@
 # Usage LLMs
 
-Widget leve para Windows que mostra as cotas de **5 horas** e **semanal** do Codex na borda da tela.
+O Usage LLMs é um widget para Windows que mostra quanto você já consumiu das cotas de **5 horas** e **semanal** do Codex. Ele fica na borda da tela e atualiza as leituras a cada 30 segundos.
 
-[![Baixar para Windows](docs/download-windows.svg)](../../releases/latest/download/Usage-LLMs-Windows.exe)
+## Baixar para Windows
+
+[![Baixar Usage LLMs para Windows de 64 bits](docs/download-windows.svg)](../../releases/latest/download/Usage-LLMs-Windows.exe)
+
+Abra o arquivo `Usage-LLMs-Windows.exe` baixado. O app é portátil e requer Windows de 64 bits com .NET Framework 4.8 ou 4.8.1. O Windows pode exibir um aviso porque o executável está sem assinatura digital.
 
 ## Como usar
 
-1. Baixe e abra o executável. Ele é portátil e requer **Windows de 64 bits com .NET Framework 4.8 ou 4.8.1**.
-2. Para ver suas cotas, conecte o Codex CLI à sua conta ChatGPT. O widget também encontra o CLI da extensão oficial do VS Code. [Instalar o Codex CLI](https://github.com/openai/codex#quickstart)
-3. Passe o mouse sobre o ícone para ver o consumo e os horários de renovação. Arraste o widget para trocar de borda ou clique com o botão direito para ajustar a aparência, os provedores visíveis e a inicialização com o Windows.
+1. Para ver suas cotas, entre na sua conta ChatGPT pelo Codex CLI ou pela extensão oficial do Codex para VS Code. [Instalar o Codex CLI](https://github.com/openai/codex#quickstart)
+2. Passe o mouse sobre o Codex para ver os percentuais e quando as cotas renovam. O brilho atrás do ícone indica atividade em uma sessão local.
+3. Arraste o widget para mudar de borda. Clique com o botão direito para ajustar tamanho e cores, escolher quais provedores aparecem ou ativar a inicialização com o Windows.
 
-As cotas são atualizadas automaticamente a cada 30 segundos. O brilho atrás do ícone indica atividade em uma sessão local do Codex. Claude Code, Antigravity e Grok Build são prévias da interface.
+![Widget na borda direita do Windows, com os anéis e o cartão de cotas do Codex aberto](docs/widget-preview.png)
 
-O Windows pode exibir um aviso porque o executável está sem assinatura digital.
+*Imagem ilustrativa. As cotas reais estão disponíveis para o Codex. Claude Code, Antigravity e Grok Build aparecem como prévias da interface.*
 
 ## Compilar
 
